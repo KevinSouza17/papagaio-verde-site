@@ -15,7 +15,9 @@ module.exports = async (req, res) => {
         await client.query("BEGIN");
         const result = await client.query("UPDATE orders SET status=$1 WHERE id=$2 RETURNING *", [status, id]);
         if (!result.rowCount) { await client.query("ROLLBACK"); return send(res, 404, { error: "Pedido não encontrado." }); }
-        if (String(note || "").trim()) await client.query("INSERT INTO order_status_history(order_id,new_status,note,changed_by) VALUES($1,$2,$3,$4)", [id,status,String(note).trim().slice(0,500),process.env.ADMIN_EMAIL || "equipe"]);
+        if (String(note || "").trim()) {
+          await client.query("UPDATE order_status_history SET note=$1, changed_by=$2 WHERE id=(SELECT id FROM order_status_history WHERE order_id=$3 AND new_status=$4 ORDER BY created_at DESC,id DESC LIMIT 1)", [String(note).trim().slice(0,500), process.env.ADMIN_EMAIL || "equipe", id, status]);
+        }
         await client.query("COMMIT");
         return send(res, 200, { order: result.rows[0] });
       } catch (e) { await client.query("ROLLBACK"); throw e; }
