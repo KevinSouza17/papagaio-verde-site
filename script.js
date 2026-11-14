@@ -1,30 +1,9 @@
-// Configure o WhatsApp da loja usando DDI + DDD + número, somente números.
-// Exemplo de formato: 5511999999999
-const WHATSAPP_NUMBER = "";
-
-document.getElementById("year").textContent = new Date().getFullYear();
-
-const menuButton = document.querySelector(".menu-toggle");
-const navigation = document.querySelector(".navigation");
-menuButton.addEventListener("click", () => {
-  const isOpen = navigation.classList.toggle("open");
-  menuButton.setAttribute("aria-expanded", String(isOpen));
-});
-navigation.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
-  navigation.classList.remove("open");
-  menuButton.setAttribute("aria-expanded", "false");
-}));
-
-const whatsappLink = document.getElementById("whatsapp-link");
-const contactHint = document.getElementById("contact-hint");
-if (WHATSAPP_NUMBER) {
-  whatsappLink.href = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent("Olá! Gostaria de informações sobre a Papagaio Verde.");
-  whatsappLink.target = "_blank";
-  whatsappLink.rel = "noopener noreferrer";
-  contactHint.textContent = "Atendimento pelo WhatsApp.";
-} else {
-  whatsappLink.addEventListener("click", event => {
-    event.preventDefault();
-    contactHint.textContent = "O número do WhatsApp ainda precisa ser configurado no arquivo script.js.";
-  });
-}
+document.getElementById("year").textContent=new Date().getFullYear();
+const menuButton=document.querySelector(".menu-toggle"),navigation=document.querySelector(".navigation");
+menuButton?.addEventListener("click",()=>{const open=navigation.classList.toggle("open");menuButton.setAttribute("aria-expanded",String(open))});
+navigation?.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{navigation.classList.remove("open");menuButton.setAttribute("aria-expanded","false")}));
+const form=document.getElementById("order-request-form"),feedback=document.getElementById("request-feedback");
+form?.addEventListener("submit",async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(form).entries()),cfg=window.PAPAGAIO_SUPABASE||{};
+if(!window.supabase||!cfg.url||!cfg.anonKey||cfg.url.includes("SEU-PROJETO")){feedback.textContent="Banco ainda não conectado. Vamos encaminhar sua solicitação pelo WhatsApp.";const msg=["Olá! Quero solicitar um orçamento.", "Nome: "+d.customer_name,"WhatsApp: "+d.contact_phone,"Serviço: "+d.service,"Detalhes: "+d.description].join("\n");window.open("https://wa.me/5511972885199?text="+encodeURIComponent(msg),"_blank","noopener");return}
+const btn=form.querySelector("button");btn.disabled=true;btn.textContent="Enviando...";
+try{const client=window.supabase.createClient(cfg.url,cfg.anonKey),{data,error}=await client.from("orders").insert({customer_name:d.customer_name.trim(),contact_phone:d.contact_phone.trim(),customer_email:d.customer_email.trim()||null,service:d.service,description:d.description.trim(),status:"received"}).select("order_number").single();if(error)throw error;feedback.textContent="Pedido registrado! Seu código é "+data.order_number+". Guarde-o para acompanhar.";form.reset();window.open("https://wa.me/5511972885199?text="+encodeURIComponent("Olá! Enviei uma solicitação pelo site. Código: "+data.order_number),"_blank","noopener")}catch(err){console.error(err);feedback.textContent="Não foi possível registrar. Tente novamente ou chame no WhatsApp."}finally{btn.disabled=false;btn.innerHTML='Enviar solicitação <span>↗</span>'}});
