@@ -6,23 +6,23 @@
   <meta name="theme-color" content="#103d2b">
   <meta name="description" content="Papagaio Verde — papelaria, materiais e soluções para o seu dia a dia.">
   <title>Papagaio Verde | Papelaria</title>
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/favicon-papagaio-verde.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script src="script.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script>
 </head>
 <body>
   <div class="announcement">Tudo para suas ideias saírem do papel. <span>💚</span></div>
   <header class="site-header">
     <a class="brand" href="#inicio" aria-label="Papagaio Verde, início">
-      <span class="brand-mark" aria-hidden="true">🦜</span>
-      <span class="brand-name">papagaio<span>verde</span><small>PAPELARIA & CRIATIVIDADE</small></span>
+      <img src="assets/logo-papagaio-verde.svg" alt="Papagaio Verde" class="brand-logo">
     </a>
     <button class="menu-toggle" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span><span></span></button>
     <nav class="navigation" aria-label="Navegação principal">
-      <a href="#inicio">Início</a><a href="#categorias">Categorias</a><a href="#sobre">A loja</a><a href="#contato">Contato</a>
+      <a href="#inicio">Início</a><a href="#categorias">Categorias</a><a href="#sobre">A loja</a><a href="#contato">Contato</a><a href="admin/">Área da equipe</a>
       <a class="nav-cta" href="#contato">Fale com a gente <span>↗</span></a>
     </nav>
   </header>
@@ -57,9 +57,10 @@
 
     <section class="about" id="sobre"><div class="about-visual"><div class="about-orbit">PV</div><span class="about-parrot">🦜</span><span class="about-spark spark-one">✳</span><span class="about-spark spark-two">✦</span></div><div class="about-copy"><span class="eyebrow">PRAZER, SOMOS A PAPAGAIO VERDE</span><h2>Mais que papelaria.<br><em>Um espaço de ideias.</em></h2><p>Acreditamos que os materiais certos ajudam a transformar planos em projetos, curiosidade em aprendizado e criatividade em coisas incríveis.</p><p>Estamos aqui para ajudar você a encontrar o que precisa. Passe na loja ou fale com a nossa equipe!</p><a class="button button-light" href="#contato">Entre em contato <span>↗</span></a></div></section>
 
-    <section class="contact section-wrap" id="contato"><div class="contact-intro"><span class="eyebrow">VAMOS CONVERSAR?</span><h2>Sua próxima ideia<br>começa com um <em>oi.</em></h2><p>Ficou com dúvida sobre um produto ou quer consultar disponibilidade? Fale com a equipe da Papagaio Verde.</p></div><div class="contact-panel"><div class="contact-icon">✉</div><h3>Estamos por aqui.</h3><p>Entre em contato para consultar produtos, tirar dúvidas ou pedir informações.</p><a class="button button-primary contact-button" href="#" id="whatsapp-link">Chamar no WhatsApp <span>↗</span></a><small id="contact-hint">O canal de atendimento será configurado em breve.</small></div></section>
+    <section class="order-request section-wrap" id="pedido"><div class="section-heading"><div><span class="eyebrow">ACOMPANHE SEU PEDIDO</span><h2>Do pedido à entrega,<br><em>sem perder o fio.</em></h2></div><p>Envie sua solicitação e receba um número de acompanhamento. Nossa equipe atualizará o andamento.</p></div><div class="request-card"><form id="order-request-form"><div class="request-grid"><label>Seu nome<input name="customer_name" required maxlength="100" placeholder="Nome completo"></label><label>WhatsApp<input name="contact_phone" required maxlength="30" placeholder="(11) 99999-9999"></label><label>E-mail (opcional)<input name="customer_email" type="email" maxlength="160" placeholder="voce@email.com"></label><label>Serviço<select name="service" required><option value="">Selecione</option><option>Impressões e cópias</option><option>Encadernação</option><option>Plastificação</option><option>Banners e comunicação visual</option><option>Adesivos e personalizados</option><option>Carimbos e brindes</option><option>Material de papelaria</option><option>Outro</option></select></label><label class="wide">Detalhes<textarea name="description" rows="4" required maxlength="2000" placeholder="Quantidade, tamanho, prazo e outras informações..."></textarea></label></div><button class="button button-primary" type="submit">Enviar solicitação <span>↗</span></button><p class="request-feedback" id="request-feedback" role="status">Guarde o número do pedido para consultar o andamento.</p></form></div></section>
+    <section class="contact section-wrap" id="contato"><div class="contact-intro"><span class="eyebrow">VAMOS CONVERSAR?</span><h2>Sua próxima ideia<br>começa com um <em>oi.</em></h2><p>Ficou com dúvida sobre um produto ou quer consultar disponibilidade? Fale com a equipe da Papagaio Verde.</p></div><div class="contact-panel"><div class="contact-icon">✉</div><h3>Estamos por aqui.</h3><p>Entre em contato para consultar produtos, tirar dúvidas ou pedir informações.</p><a class="button button-primary contact-button" href="https://wa.me/5511972885199" target="_blank" rel="noopener noreferrer" id="whatsapp-link">Chamar no WhatsApp <span>↗</span></a><small id="contact-hint">O canal de atendimento será configurado em breve.</small></div></section>
   </main>
 
-  <footer class="site-footer"><a class="brand footer-brand" href="#inicio"><span class="brand-mark">🦜</span><span class="brand-name">papagaio<span>verde</span><small>PAPELARIA & CRIATIVIDADE</small></span></a><span>Feito com carinho e criatividade. <b>© <span id="year"></span> Papagaio Verde</b></span><a href="#inicio">Voltar ao topo ↑</a></footer>
+  <footer class="site-footer"><a class="brand footer-brand" href="#inicio"><img src="assets/logo-papagaio-verde.svg" alt="Papagaio Verde" class="brand-logo footer-logo"></a><span>Feito com carinho e criatividade. <b>© <span id="year"></span> Papagaio Verde</b></span><a href="#inicio">Voltar ao topo ↑</a></footer>
 </body>
 </html>
