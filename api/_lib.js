@@ -4,7 +4,11 @@ const { createHmac, timingSafeEqual } = require("node:crypto");
 let pool;
 function db() {
   if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL não configurada.");
-  if (!pool) pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: true }, max: 5 });
+  if (!pool) {
+    // Explicit verify-full preserves the existing certificate validation and avoids pg connection-string SSL-mode deprecation warnings.
+    const connectionString = process.env.DATABASE_URL.replace(/([?&])sslmode=(?:prefer|require|verify-ca)(?=(&|$))/i, "$1sslmode=verify-full");
+    pool = new Pool({ connectionString, ssl: { rejectUnauthorized: true }, max: 5 });
+  }
   return pool;
 }
 function send(res, status, body) {
