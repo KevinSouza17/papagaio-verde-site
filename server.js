@@ -14,7 +14,9 @@ const routes = {
   "/api/customer/logout": "./api/customer/logout.js",
   "/api/customer/register": "./api/customer/register.js",
   "/api/customer/orders": "./api/customer/orders.js",
-  "/api/customer/cancel-order": "./api/customer/cancel-order.js",\n  "/api/customer/upload-photo": "./api/customer/upload-photo.js",\n  "/api/admin/order-attachment": "./api/admin/order-attachment.js",
+  "/api/customer/cancel-order": "./api/customer/cancel-order.js",
+  "/api/customer/upload-photo": "./api/customer/upload-photo.js",
+  "/api/admin/order-attachment": "./api/admin/order-attachment.js",
   "/api/customer/session": "./api/customer/session.js",
   "/api/orders": "./api/orders.js"
 };
@@ -40,7 +42,7 @@ function sendError(res, status, message) {
 }
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
-  const route = routes[url.pathname.replace(/\/$/, "") || "/"];
+  const route = routes[url.pathname.replace(/\/$/, "") || "/"];\n  req.query = Object.fromEntries(url.searchParams.entries());
   if (route) {
     try {
       if (url.pathname !== "/api/customer/upload-photo" && ["POST","PATCH","PUT"].includes(req.method)) req.body = await readBody(req);
