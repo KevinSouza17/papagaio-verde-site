@@ -36,7 +36,11 @@ CREATE TABLE IF NOT EXISTS public.orders (
   due_date date,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now(),
-  customer_user_id uuid REFERENCES public.customers(id) ON DELETE SET NULL
+  customer_user_id uuid REFERENCES public.customers(id) ON DELETE SET NULL,
+  cancellation_status varchar(16) NOT NULL DEFAULT 'none'
+    CHECK (cancellation_status IN ('none','pending','approved','rejected')),
+  cancellation_requested_at timestamptz,
+  cancellation_reviewed_at timestamptz
 );
 
 CREATE TABLE IF NOT EXISTS public.order_status_history (
@@ -85,3 +89,15 @@ DROP TRIGGER IF EXISTS pv_orders_status_history ON public.orders;
 CREATE TRIGGER pv_orders_status_history
 AFTER INSERT OR UPDATE OF status ON public.orders
 FOR EACH ROW EXECUTE FUNCTION public.pv_log_order_status_change();
+
+-- Upgrade seguro para bancos que já possuem a estrutura anterior.
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS cancellation_status varchar(16) NOT NULL DEFAULT 'none';
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS cancellation_requested_at timestamptz;
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS cancellation_reviewed_at timestamptz;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'orders_cancellation_status_check') THEN
+    ALTER TABLE public.orders ADD CONSTRAINT orders_cancellation_status_check
+      CHECK (cancellation_status IN ('none','pending','approved','rejected'));
+  END IF;
+END $$;
+CREATE INDEX IF NOT EXISTS orders_cancellation_status_idx ON public.orders (cancellation_status);
