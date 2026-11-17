@@ -1,43 +1,50 @@
 # Papagaio Verde — site e gestão de pedidos
 
-Site institucional e sistema de solicitações da Papagaio Verde, com páginas independentes e área privada para clientes e equipe.
+Site institucional e sistema de solicitações da Papagaio Verde, com páginas públicas, área de clientes e painel administrativo.
 
-## Páginas públicas
-- / — início
-- /categorias.html — categorias de produtos e serviços
-- /loja.html — sobre a loja
-- /solicitar.html — formulário de solicitação
-- /contato.html — canais de atendimento
-- /conta/ — cadastro, login e histórico de pedidos do cliente
-- /admin/ — painel privado da equipe
+## Infraestrutura intercambiável
 
-## Arquitetura
-- Frontend estático HTML, CSS e JavaScript.
-- API em /api.
-- PostgreSQL como banco de dados, compatível com Neon ou instalação própria.
-- Uma única camada de conexão em api/_lib.js, configurada por variáveis de ambiente.
-- Sessões assinadas com HMAC e cookies HttpOnly (autenticação atual; integração Neon Auth ainda em preparação).
-- Senhas de contas locais armazenadas com scrypt.
-- Não há checkout nem pagamento online; a loja combina valores e pagamento diretamente com o cliente.
+O mesmo código pode funcionar em três cenários, sem reescrever as páginas:
 
-## Banco de dados: nuvem ou local
+1. **Vercel + Neon:** hospedagem Vercel e banco PostgreSQL Neon.
+2. **Supabase:** hospedagem Vercel ou própria e banco PostgreSQL do Supabase.
+3. **Servidor próprio + PostgreSQL local:** site e API executados no servidor da loja.
 
-A aplicação usa o driver PostgreSQL pg nos dois ambientes. Para alternar, configure:
+A aplicação usa Node.js 20+ e o driver PostgreSQL `pg`. Neon, Supabase e PostgreSQL local falam o mesmo protocolo PostgreSQL; a troca é feita por variáveis de ambiente. O Supabase é usado como banco PostgreSQL nesta arquitetura, não como autenticação direta no navegador.
 
-- DATABASE_URL: endereço do PostgreSQL escolhido.
-- DATABASE_SSL=verify-full: recomendado para Neon e bancos remotos com certificado válido.
-- DATABASE_SSL=disable: somente para PostgreSQL em localhost/rede privada confiável.
-- DATABASE_POOL_MAX: limite de conexões (padrão 5).
+## Segurança administrativa
 
-Consulte database/README.md e database/schema.sql para instalação e migração. Uma API hospedada na Vercel não acessa diretamente o localhost de um computador da loja; o banco local exige que a API também rode no servidor local ou que exista uma conexão privada segura entre os ambientes.
+- Existe uma única identidade administrativa: **Papagaio Verde**.
+- O acesso é configurado por `ADMIN_LOGIN` (ou `ADMIN_EMAIL` legado), `ADMIN_PASSWORD` e `SESSION_SECRET`.
+- O login administrativo não consulta a tabela de equipe nem aceita cadastro público.
+- `/api/admin/register` permanece apenas como rota de compatibilidade e responde 410 (cadastro desativado).
+- Nunca coloque senhas, connection strings ou chaves privadas no frontend ou no Git.
+- Contas de clientes são independentes e continuam podendo ser criadas.
 
-## Variáveis de ambiente
+## Configuração
 
-Consulte .env.example. Configure os valores reais na Vercel ou no ambiente local. Nunca publique credenciais no repositório.
+1. Copie `.env.example` para `.env.local`.
+2. Escolha `DB_PROVIDER=neon`, `supabase` ou `local`.
+3. Configure `DATABASE_URL`, `DATABASE_SSL`, `ADMIN_LOGIN`, `ADMIN_PASSWORD` e `SESSION_SECRET`.
+4. Instale dependências com `npm install`.
+5. Execute `npm start` para rodar localmente em `http://localhost:3000`.
 
-## Pedidos
-Status: received, reviewing, awaiting_approval, in_production, ready, delivered, cancelled.
-O histórico de alterações é mantido por gatilhos PostgreSQL.
+Na Vercel, cadastre as mesmas variáveis em Project Settings → Environment Variables e faça novo deploy. Não envie `.env.local` ao GitHub.
 
-## Desenvolvimento
-Requer Node.js 20+ para as funções da API. Dependência de runtime: pg.
+## Páginas
+
+- `/` — início
+- `/categorias.html` — categorias
+- `/loja.html` — sobre a loja
+- `/solicitar.html` — formulário de solicitação
+- `/contato.html` — contato
+- `/conta/` — cadastro, login e histórico do cliente
+- `/admin/` — painel administrativo
+
+## Banco e migrações
+
+Consulte `database/README.md`, `database/schema.sql` e `supabase/README.md`. Faça backup antes de qualquer migração. A aplicação não copia dados automaticamente ao alternar o banco.
+
+## Limite do banco local
+
+Uma função serverless na Vercel não acessa o `localhost` de um computador da loja. Para manter o site na Vercel e o banco na loja, será necessária uma API local exposta por VPN/túnel privado autenticado e firewall. Não exponha a porta PostgreSQL 5432 diretamente à internet.

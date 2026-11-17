@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Área da equipe | Papagaio Verde</title>
+<title>Administração | Papagaio Verde</title>
 <link rel="icon" href="../assets/favicon-papagaio-verde.svg" type="image/svg+xml">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="admin.css"><script src="admin.js" defer></script>
@@ -13,29 +13,15 @@
 <main class="shell">
 <section id="login-view" class="login-card auth-card">
 <div class="auth-mascot"><img src="../assets/favicon-papagaio-verde.svg" alt="Mascote Papagaio Verde"></div>
-<span class="eyebrow">ESPAÇO EXCLUSIVO DA EQUIPE</span><h1>Gestão da loja, em um só lugar.</h1>
-<p>Entre para acompanhar pedidos, atualizar etapas e manter a equipe organizada.</p>
-<div class="auth-tabs" role="tablist" aria-label="Acesso à equipe">
-<button type="button" class="auth-tab active" id="show-login" role="tab" aria-selected="true">Entrar</button>
-<button type="button" class="auth-tab" id="show-register" role="tab" aria-selected="false">Criar conta</button>
-</div>
+<span class="eyebrow">ADMINISTRAÇÃO OFICIAL</span><h1>Bem-vindo ao painel.</h1>
+<p>Área administrativa exclusiva da conta oficial Papagaio Verde.</p>
 <form id="login-form" class="auth-form">
-<label>CNPJ ou e-mail<input name="identifier" type="text" inputmode="email" autocomplete="username" placeholder="00.000.000/0000-00 ou voce@email.com" required></label>
+<label>CNPJ ou e-mail administrativo<input name="identifier" type="text" inputmode="email" autocomplete="username" placeholder="Identificação administrativa" required></label>
 <label>Senha<input name="password" type="password" autocomplete="current-password" placeholder="Sua senha" required></label>
 <button class="primary" type="submit">Entrar no painel <span>↗</span></button>
 <p id="login-message" class="message" role="status"></p>
 </form>
-<form id="register-form" class="auth-form" hidden>
-<label>Nome completo<input name="full_name" type="text" autocomplete="name" maxlength="100" placeholder="Como podemos te chamar?" required></label>
-<label>E-mail<input name="email" type="email" autocomplete="email" maxlength="160" placeholder="voce@email.com" required></label>
-<label>Crie uma senha<input name="password" type="password" autocomplete="new-password" minlength="10" placeholder="Mínimo de 10 caracteres" required></label>
-<label>Confirme sua senha<input name="confirm_password" type="password" autocomplete="new-password" minlength="10" placeholder="Digite a senha novamente" required></label>
-<label>Código de convite<input name="invite_code" type="password" autocomplete="off" placeholder="Solicite ao responsável pela loja" required></label>
-<p class="form-hint">A criação de contas é restrita à equipe. Peça o código de convite ao responsável pela administração.</p>
-<button class="primary" type="submit">Criar minha conta <span>↗</span></button>
-<p id="register-message" class="message" role="status"></p>
-</form>
-<small class="auth-foot">Acesso protegido · Papagaio Verde</small>
+<small class="auth-foot">Acesso exclusivo · Papagaio Verde</small>
 </section>
 <section id="dashboard-view" hidden>
 <div class="dashboard-head"><div><span class="eyebrow">GESTÃO DE ATENDIMENTOS</span><h1>Pedidos</h1><p>Consulte solicitações e atualize o andamento.</p></div><button id="logout-button" class="secondary">Sair</button></div>

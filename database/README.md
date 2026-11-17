@@ -1,41 +1,38 @@
-# Banco de dados: nuvem e local
+# Banco de dados — Neon, Supabase ou PostgreSQL local
 
-## Compatibilidade
+## Uma única aplicação, três destinos
 
-O site usa PostgreSQL nos dois cenários. A API acessa o banco por uma única camada (api/_lib.js) usando o driver pg. As consultas da aplicação não dependem de recursos exclusivos do Neon; a conexão muda por variáveis de ambiente.
+A API usa o driver oficial `pg` e uma connection string PostgreSQL. Configure `DB_PROVIDER` e `DATABASE_URL`; as consultas, páginas e rotas permanecem iguais.
 
-- Nuvem/Neon: DATABASE_SSL=verify-full.
-- PostgreSQL local: DATABASE_SSL=disable somente em localhost ou rede privada confiável.
-- DATABASE_POOL_MAX controla o tamanho do pool.
+| Ambiente | DB_PROVIDER | DATABASE_SSL |
+|---|---|---|
+| Vercel + Neon | `neon` | `verify-full` |
+| Supabase PostgreSQL | `supabase` | `verify-full` |
+| PostgreSQL na máquina/servidor local | `local` | `disable` apenas em localhost/rede privada confiável |
+| Outro PostgreSQL compatível | `postgres` | conforme TLS do servidor |
 
-## Preparar um PostgreSQL local
+No Supabase, use a connection string PostgreSQL do projeto (preferencialmente pooler em modo compatível com o runtime serverless). A chave `service_role` não é necessária para esta arquitetura e nunca deve ir ao navegador. O acesso ao banco ocorre somente pela API do servidor.
 
-1. Instale PostgreSQL 15 ou superior no computador/servidor.
-2. Crie um banco papagaio_verde e um usuário próprio para a aplicação (não use o superusuário postgres na aplicação).
-3. Execute database/schema.sql no banco vazio.
-4. Copie .env.example para .env.local e configure DATABASE_URL, DATABASE_SSL=disable, SESSION_SECRET, ADMIN_EMAIL e ADMIN_PASSWORD.
-5. Inicie a API no ambiente local com Node.js 20+.
+## Instalação local
 
-## Alternar entre os bancos
+1. Instale PostgreSQL 15 ou superior.
+2. Crie um banco `papagaio_verde` e um usuário próprio da aplicação; não use o superusuário `postgres` no dia a dia.
+3. Execute `database/schema.sql`.
+4. Copie `.env.example` para `.env.local`, ajuste a connection string e use `DB_PROVIDER=local`.
+5. Execute `npm install` e `npm start`.
 
-Não altere arquivos de código para alternar. Mude apenas DATABASE_URL e DATABASE_SSL no ambiente em que a API estiver rodando e reinicie/reimplante a aplicação. Cada ambiente tem seu próprio conjunto de variáveis:
+## Alternar
 
-- Vercel apontando para Neon: URL do Neon e verify-full.
-- Aplicação e API executadas na rede da loja: endereço privado do PostgreSQL local e disable (ou TLS validado, se configurado).
+Altere somente as variáveis do ambiente em que a API será executada e reinicie/reimplante. A troca de connection string não transfere dados. Para migrar dados, faça backup e restauração controlados, valide contagens e teste o destino antes de apontar o site para ele.
 
-**Limite importante:** uma função serverless hospedada na Vercel não consegue acessar 127.0.0.1 do computador da loja. Para usar o banco local mantendo o site hospedado na Vercel, será necessário disponibilizar uma API na loja por uma conexão privada segura (VPN/túnel com autenticação e firewall), ou hospedar também a API no servidor local. Não exponha a porta 5432 diretamente à internet.
+## Vercel e banco local
 
-## Migração de dados
+A Vercel não pode conectar-se ao `127.0.0.1` do computador da loja. Para banco local, execute também a API no servidor local, ou crie uma conexão privada segura entre a Vercel e a rede da loja. Não exponha a porta 5432 publicamente.
 
-O schema.sql cria apenas a estrutura e não apaga nem copia dados. Para copiar dados reais entre bancos PostgreSQL, faça backup e restauração com pg_dump/pg_restore, preferencialmente com a aplicação em manutenção e após validar espaço, versões e permissões. Exemplo:
+## Segurança e produção
 
-```bash
-pg_dump "$SOURCE_DATABASE_URL" --format=custom --no-owner --no-acl --file=papagaio-backup.dump
-pg_restore --dbname="$TARGET_DATABASE_URL" --no-owner --no-acl --clean --if-exists papagaio-backup.dump
-```
-
-A opção --clean remove objetos existentes no destino. Use somente em um banco de destino preparado e após confirmar o backup; nunca execute contra a base de produção por engano. Para uma primeira migração, prefira um banco vazio.
-
-## Observações sobre autenticação
-
-Este pacote cobre a portabilidade do PostgreSQL usado por pedidos, clientes e equipe. Login Google, verificação de e-mail e recuperação de senha são serviços separados de autenticação e não migram automaticamente junto com o banco de negócio. A integração com Neon Auth ainda precisa ser concluída; antes de alternar a autenticação para um ambiente local, será necessário escolher e configurar um provedor compatível.
+- Use TLS validado em conexões remotas.
+- Mantenha a connection string apenas em variáveis secretas do servidor.
+- Faça backup antes de migrações e mantenha cópia fora do servidor.
+- Restrinja o usuário PostgreSQL da aplicação às permissões necessárias.
+- O SQL de estrutura não contém credenciais e não cria uma conta administrativa.
