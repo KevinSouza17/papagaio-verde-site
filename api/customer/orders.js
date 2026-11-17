@@ -1,6 +1,6 @@
 const { db, send, getCustomerSession } = require("../_lib");
 const { randomUUID } = require("node:crypto");
-const { signObject } = require("../_storage");
+const { signObject } = require("../../lib/storage");
 
 module.exports.config = { api: { bodyParser: false } };
 function readRaw(req, maxBytes) {
