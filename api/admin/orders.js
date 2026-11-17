@@ -1,9 +1,17 @@
-const { db, send, requireAdmin } = require("../_lib");\nconst { signObject } = require("../_storage");
+const { db, send, requireAdmin } = require("../_lib");
+const { signObject } = require("../_storage");
 const statuses = ["received","reviewing","awaiting_approval","in_production","ready","delivered","cancelled"];
 module.exports = async (req, res) => {
   if (!requireAdmin(req, res)) return;
   try {
     if (req.method === "GET") {
+      if (req.query?.download_attachment === "1") {
+        const id = String(req.query.id || "").trim();
+        if (!id) return send(res, 400, { error: "Pedido inválido." });
+        const { rows } = await db().query("SELECT attachment_key, attachment_name FROM orders WHERE id=$1 LIMIT 1", [id]);
+        if (!rows.length || !rows[0].attachment_key) return send(res, 404, { error: "Este pedido não possui foto anexada." });
+        return send(res, 200, { url: signObject("GET", rows[0].attachment_key, "", 300, rows[0].attachment_name || "foto-do-pedido") });
+      }
       const { rows } = await db().query("SELECT * FROM orders ORDER BY created_at DESC LIMIT 500");
       return send(res, 200, { orders: rows });
     }
