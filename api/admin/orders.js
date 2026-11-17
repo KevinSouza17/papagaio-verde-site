@@ -1,4 +1,4 @@
-const { db, send, requireAdmin } = require("../_lib");
+const { db, send, requireAdmin } = require("../_lib");\nconst { signObject } = require("../_storage");
 const statuses = ["received","reviewing","awaiting_approval","in_production","ready","delivered","cancelled"];
 module.exports = async (req, res) => {
   if (!requireAdmin(req, res)) return;
