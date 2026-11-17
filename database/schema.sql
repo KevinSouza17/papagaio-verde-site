@@ -101,3 +101,4 @@ DO $$ BEGIN
   END IF;
 END $$;
 CREATE INDEX IF NOT EXISTS orders_cancellation_status_idx ON public.orders (cancellation_status);
+\n-- Optional customer photo attachments.\nALTER TABLE public.orders ADD COLUMN IF NOT EXISTS attachment_key text;\nALTER TABLE public.orders ADD COLUMN IF NOT EXISTS attachment_name varchar(255);\nALTER TABLE public.orders ADD COLUMN IF NOT EXISTS attachment_content_type varchar(100);\nALTER TABLE public.orders ADD COLUMN IF NOT EXISTS attachment_size integer;\n
