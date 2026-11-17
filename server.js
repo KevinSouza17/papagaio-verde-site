@@ -16,7 +16,6 @@ const routes = {
   "/api/customer/orders": "./api/customer/orders.js",
   "/api/customer/cancel-order": "./api/customer/cancel-order.js",
   "/api/customer/session": "./api/customer/session.js",
-  "/api/orders": "./api/orders.js"
 };
 const types = { ".html":"text/html; charset=utf-8", ".css":"text/css; charset=utf-8", ".js":"text/javascript; charset=utf-8", ".svg":"image/svg+xml", ".png":"image/png", ".jpg":"image/jpeg", ".jpeg":"image/jpeg", ".webp":"image/webp", ".ico":"image/x-icon", ".json":"application/json; charset=utf-8" };
 
