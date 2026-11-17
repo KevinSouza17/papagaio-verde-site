@@ -44,7 +44,7 @@ const server = http.createServer(async (req, res) => {
     try {
       if (["POST","PATCH","PUT"].includes(req.method)) req.body = await readBody(req);
       else req.body = {};
-      return require(route)(req, res);
+      return await require(route)(req, res);
     } catch (error) {
       console.error("Local API error:", error.message);
       return sendError(res, error.message.includes("JSON") ? 400 : 500, error.message || "Erro interno.");
