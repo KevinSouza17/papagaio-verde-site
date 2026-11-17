@@ -2,15 +2,55 @@ const { Pool } = require("pg");
 const { createHmac, timingSafeEqual } = require("node:crypto");
 
 let pool;
+
+function getDatabaseConfig() {
+  const rawUrl = process.env.DATABASE_URL;
+  if (!rawUrl) throw new Error("DATABASE_URL não configurada.");
+
+  // Neon and self-hosted PostgreSQL use the same pg driver.
+  // Use verify-full for cloud databases and disable only for a trusted local network.
+  const sslMode = String(process.env.DATABASE_SSL || "verify-full").toLowerCase();
+  const allowedModes = new Set(["disable", "require", "verify-full"]);
+  if (!allowedModes.has(sslMode)) {
+    throw new Error("DATABASE_SSL deve ser disable, require ou verify-full.");
+  }
+
+  let connectionString = rawUrl;
+  if (/[?&]sslmode=/i.test(connectionString)) {
+    connectionString = connectionString.replace(/([?&])sslmode=[^&]*/i, "$1sslmode=" + sslMode);
+  } else {
+    connectionString += (connectionString.includes("?") ? "&" : "?") + "sslmode=" + sslMode;
+  }
+
+  const poolMax = Number.parseInt(process.env.DATABASE_POOL_MAX || "5", 10);
+  if (!Number.isInteger(poolMax) || poolMax < 1 || poolMax > 30) {
+    throw new Error("DATABASE_POOL_MAX deve ser um número entre 1 e 30.");
+  }
+
+  const ssl = sslMode === "disable"
+    ? false
+    : { rejectUnauthorized: sslMode === "verify-full" };
+
+  return {
+    connectionString,
+    ssl,
+    max: poolMax,
+    idleTimeoutMillis: 30_000,
+    connectionTimeoutMillis: 10_000,
+    keepAlive: true
+  };
+}
+
 function db() {
-  if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL não configurada.");
   if (!pool) {
-    // Explicit verify-full preserves the existing certificate validation and avoids pg connection-string SSL-mode deprecation warnings.
-    const connectionString = process.env.DATABASE_URL.replace(/([?&])sslmode=(?:prefer|require|verify-ca)(?=(&|$))/i, "$1sslmode=verify-full");
-    pool = new Pool({ connectionString, ssl: { rejectUnauthorized: true }, max: 5 });
+    pool = new Pool(getDatabaseConfig());
+    pool.on("error", (error) => {
+      console.error("Unexpected PostgreSQL pool error:", error.message);
+    });
   }
   return pool;
 }
+
 function send(res, status, body) {
   res.statusCode = status;
   res.setHeader("Content-Type", "application/json; charset=utf-8");
