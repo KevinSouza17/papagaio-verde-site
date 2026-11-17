@@ -14,7 +14,7 @@ const routes = {
   "/api/customer/logout": "./api/customer/logout.js",
   "/api/customer/register": "./api/customer/register.js",
   "/api/customer/orders": "./api/customer/orders.js",
-  "/api/customer/cancel-order": "./api/customer/cancel-order.js",
+  "/api/customer/cancel-order": "./api/customer/cancel-order.js",\n  "/api/customer/upload-photo": "./api/customer/upload-photo.js",\n  "/api/admin/order-attachment": "./api/admin/order-attachment.js",
   "/api/customer/session": "./api/customer/session.js",
   "/api/orders": "./api/orders.js"
 };
@@ -43,7 +43,7 @@ const server = http.createServer(async (req, res) => {
   const route = routes[url.pathname.replace(/\/$/, "") || "/"];
   if (route) {
     try {
-      if (["POST","PATCH","PUT"].includes(req.method)) req.body = await readBody(req);
+      if (url.pathname !== "/api/customer/upload-photo" && ["POST","PATCH","PUT"].includes(req.method)) req.body = await readBody(req);
       else req.body = {};
       return await require(route)(req, res);
     } catch (error) {
