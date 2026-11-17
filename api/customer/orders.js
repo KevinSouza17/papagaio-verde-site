@@ -7,12 +7,13 @@ function readRaw(req, maxBytes) {
   return new Promise((resolve, reject) => {
     const chunks = [];
     let size = 0;
+    let tooLarge = false;
     req.on("data", chunk => {
       size += chunk.length;
-      if (size > maxBytes) { reject(new Error("O arquivo ultrapassa o limite permitido.")); return; }
-      chunks.push(chunk);
+      if (size > maxBytes) { tooLarge = true; chunks.length = 0; return; }
+      if (!tooLarge) chunks.push(chunk);
     });
-    req.on("end", () => resolve(Buffer.concat(chunks)));
+    req.on("end", () => tooLarge ? reject(new Error("O arquivo ultrapassa o limite permitido.")) : resolve(Buffer.concat(chunks)));
     req.on("error", reject);
   });
 }
