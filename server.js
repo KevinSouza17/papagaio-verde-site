@@ -42,7 +42,8 @@ function sendError(res, status, message) {
 }
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
-  const route = routes[url.pathname.replace(/\/$/, "") || "/"];\n  req.query = Object.fromEntries(url.searchParams.entries());
+  const route = routes[url.pathname.replace(/\/$/, "") || "/"];
+  req.query = Object.fromEntries(url.searchParams.entries());
   if (route) {
     try {
       if (url.pathname !== "/api/customer/upload-photo" && ["POST","PATCH","PUT"].includes(req.method)) req.body = await readBody(req);
