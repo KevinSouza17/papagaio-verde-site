@@ -15,8 +15,6 @@ const routes = {
   "/api/customer/register": "./api/customer/register.js",
   "/api/customer/orders": "./api/customer/orders.js",
   "/api/customer/cancel-order": "./api/customer/cancel-order.js",
-  "/api/customer/upload-photo": "./api/customer/upload-photo.js",
-  "/api/admin/order-attachment": "./api/admin/order-attachment.js",
   "/api/customer/session": "./api/customer/session.js",
   "/api/orders": "./api/orders.js"
 };
@@ -46,7 +44,7 @@ const server = http.createServer(async (req, res) => {
   req.query = Object.fromEntries(url.searchParams.entries());
   if (route) {
     try {
-      if (url.pathname !== "/api/customer/upload-photo" && ["POST","PATCH","PUT"].includes(req.method)) req.body = await readBody(req);
+      if (!(url.pathname === "/api/customer/orders" && url.searchParams.get("upload_photo") === "1") && ["POST","PATCH","PUT"].includes(req.method)) req.body = await readBody(req);
       else req.body = {};
       return await require(route)(req, res);
     } catch (error) {
