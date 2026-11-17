@@ -4,7 +4,7 @@ module.exports=async(req,res)=>{
  if(!customer)return send(res,401,{error:"Entre na sua conta para continuar."});
  try{
   if(req.method==="GET"){
-   const {rows}=await db().query("SELECT id,order_number,service,description,status,created_at,updated_at FROM orders WHERE customer_user_id=$1 ORDER BY created_at DESC LIMIT 100",[customer.id]);
+   const {rows}=await db().query("SELECT id,order_number,service,description,status,cancellation_status,cancellation_requested_at,cancellation_reviewed_at,created_at,updated_at FROM orders WHERE customer_user_id=$1 ORDER BY created_at DESC LIMIT 100",[customer.id]);
    return send(res,200,{orders:rows});
   }
   if(req.method==="POST"){
