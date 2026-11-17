@@ -14,6 +14,7 @@ const routes = {
   "/api/customer/logout": "./api/customer/logout.js",
   "/api/customer/register": "./api/customer/register.js",
   "/api/customer/orders": "./api/customer/orders.js",
+  "/api/customer/cancel-order": "./api/customer/cancel-order.js",
   "/api/customer/session": "./api/customer/session.js",
   "/api/orders": "./api/orders.js"
 };

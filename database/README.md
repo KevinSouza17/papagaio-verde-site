@@ -13,6 +13,10 @@ A API usa o driver oficial `pg` e uma connection string PostgreSQL. Configure `D
 
 No Supabase, use a connection string PostgreSQL do projeto (preferencialmente pooler em modo compatível com o runtime serverless). A chave `service_role` não é necessária para esta arquitetura e nunca deve ir ao navegador. O acesso ao banco ocorre somente pela API do servidor.
 
+## Migração de cancelamento de pedidos
+
+Para bancos já existentes, execute `database/migrations/20261117_order_cancellation.sql` antes de ativar a funcionalidade de solicitação e aprovação de cancelamento. O script apenas adiciona colunas e um índice; não altera nem remove pedidos existentes.
+
 ## Instalação local
 
 1. Instale PostgreSQL 15 ou superior.
