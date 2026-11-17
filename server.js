@@ -41,9 +41,10 @@ function sendError(res, status, message) {
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
   const route = routes[url.pathname.replace(/\/$/, "") || "/"];
+  req.query = Object.fromEntries(url.searchParams.entries());
   if (route) {
     try {
-      if (["POST","PATCH","PUT"].includes(req.method)) req.body = await readBody(req);
+      if (!(url.pathname === "/api/customer/orders" && url.searchParams.get("upload_photo") === "1") && ["POST","PATCH","PUT"].includes(req.method)) req.body = await readBody(req);
       else req.body = {};
       return await require(route)(req, res);
     } catch (error) {
