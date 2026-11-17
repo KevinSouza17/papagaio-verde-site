@@ -1,4 +1,4 @@
-const { db, send, getCustomerSession } = require("./_lib");
+const { db, send, getCustomerSession } = require("../_lib");
 module.exports = async (req, res) => {
   if (req.method !== "POST") return send(res, 405, { error: "Método não permitido." });
   const customer = getCustomerSession(req);
