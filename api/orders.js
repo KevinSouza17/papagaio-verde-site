@@ -5,7 +5,7 @@ module.exports = async (req, res) => {
     const customer = getCustomerSession(req);
     if (!customer?.id) return send(res, 401, { error: "Entre na sua conta para enviar um pedido." });
     const b = req.body || {};
-    const name = String(b.customer_name || customer.full_name || "").trim();
+    const name = String(b.customer_name || customer.name || "").trim();
     const phone = String(b.contact_phone || customer.phone || "").trim();
     const email = String(b.customer_email || customer.email || "").trim();
     const service = String(b.service || "").trim();
